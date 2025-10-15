@@ -149,7 +149,7 @@ function handlePlayerDisconnect(io, roomId, playerId){
   }
 
   logger.info("User left room", {playerId, roomId})
-  sysMsg(io, roomId, `${playerId} has left`);
+  systemMessage(io, roomId, `${playerId} has left`);
 }
 
 function startGame(io, roomId) {
