@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <title>Two Player Snake</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Share Tech Mono', monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+        background: #111;
+        min-height: 100vh;
+        color: #00ff00;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .game-container {
+        display: flex;
+        gap: 30px;
+        margin-top: 20px;
+        align-items: flex-start;
+        position: relative;
+        z-index: 2;
+      }
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #ffffff;
+        margin-bottom: 30px;
+        font-size: 3em;
+        font-family: 'Share Tech Mono', monospace;
+        font-weight: 400;
+        border: 2px solid #00ff00;
+        padding: 20px;
+        background: #111;
+        margin: 0 auto 30px auto;
+        max-width: 600px;
+      }
+      h1::before { content: '$ '; color: #00ff00; }
+      small { color: #666; font-size: 0.9em; display: block; margin-bottom: 10px; }
+      small::before { content: '# '; color: #00ff00; }
+      canvas {
+        width: 400px;
+        height: 400px;
+        border: 1px solid #00ff00;
+        background-color: #111;
+        position: relative;
+      }
+      canvas::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+      fieldset {
+        background: #111;
+        border: 1px solid #00ff00;
+        border-radius: 0;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #chat-container {
+        width: 250px;
+        max-width: 250px;
+        max-height: 400px;
+        height: 400px;
+      }
+
+      #chat-log {
+        overflow-y: auto;
+        height: 275px;
+        background: #111;
+        /* background: #0a0a0a; */
+        padding: 10px;
+        border: 1px solid #333;
+        margin-bottom: 10px;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 12px;
+        line-height: 1.4;
+        overflow-x: hidden;
+      }
+
+      #chat-log::-webkit-scrollbar {
+          width: 8px;
+      }
+
+      #chat-log::-webkit-scrollbar-track {
+          background: #111;
+      }
+
+      #public-rooms::-webkit-scrollbar-thumb {
+          background: #00ff00;
+          border-radius: 0;
+      }
+
+      /* for firefox */
+      #chat-log {
+        scrollbar-width: thin;
+        scrollbar-color: #00ff00 #111;
+      }
+
+      .chat-message {
+        margin-bottom: 8px;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+        hyphens: auto;
+        max-width: 100%;
+      }
+
+      .chat-message.user {
+        color: #00ff00;
+      }
+
+      .chat-message.system {
+        color: #666;
+        font-style: italic;
+      }
+
+      .chat-message.other {
+        color: #0066cc;
+        font-style: italic;
+      }
+
+      .chat-input-container {
+        display: flex;
+        align-items: center;
+        background-color: #0a0a0a;
+        border: 1px solid #333;
+        padding: 8px;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 12px;
+      }
+
+      .chat-prompt {
+        color: #00ff00;
+        margin-right: 5px;
+        user-select: none;
+        flex-shrink: 0;
+      }
+
+      #chat-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #00ff00;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 12px;
+        outline: none;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      #chat-input::placeholder {
+        color: #444;
+      }
+
+      legend {
+        font-weight: bold;
+        color: #ffffff;
+        padding: 0 10px;
+        font-size: 1.2em;
+        font-family: 'Share Tech Mono', monospace;
+        background: #111;
+        border: 1px solid #00ff00;
+        padding: 5px 15px;
+      }
+      legend::before { content: '[ '; color: #00ff00; }
+      legend::after { content: ' ] '; color: #00ff00; }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #00ff00;
+      }
+      label::before { content: '> '; color: #ffffff; }
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #00ff00;
+        border-radius: 0;
+        font-size: 16px;
+        margin-bottom: 15px;
+        background: #111;
+        color: #00ff00;
+        font-family: 'Share Tech Mono', monospace;
+        transition: all 0.3s;
+      }
+
+      input[type="text"]::placeholder { color: #666; }
+
+      input[type="checkbox"] {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border: 1px solid #00ff00;
+        background: #111;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.1s;
+      }
+      input[type="checkbox"]:checked {
+        background: #00ff00;
+      }
+      input[type="checkbox"]:checked::after {
+        content: '#';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #111;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      #player-scores {
+        max-height: 200px;
+        width: 250px;
+        max-width: 250px;
+        overflow-y: auto;
+        border: 1px solid #333;
+        border-radius: 0;
+        padding: 10px;
+        max-width: 10;
+        background: #111;
+      }
+      #player-scores::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      #player-scores p {
+        padding: 8px;
+        border-bottom: 1px solid #333;
+        animation: fadeIn 0.5s ease-in;
+        color: #0066cc;
+        font-size: 0.9rem;
+        font-family: 'Share Tech Mono', monospace;
+      }
+
+      #player-scores p:last-child {
+          border-bottom: none;
+      }
+
+      #player-scores p::before {
+          content: '* ';
+          color: #ffffff;
+      }
+
+      #num-ready {
+        font-weight: bold;
+        color: #00ff00;
+        margin: 0 0 0 15px;
+        font-size: 18px;
+        font-family: 'Share Tech Mono', monospace;
+      }
+      @media (max-width: 768px) {
+        .game-container {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+        canvas {
+          width: 400px;
+          height: 400px;
+        }
+        .controls { flex-direction: column; gap: 15px; }
+        #player-scores { min-width: 150px; }
+      }
+      @media (max-width: 480px) {
+        canvas {
+          width: 300px;
+          height: 300px;
+        }
+        body { padding: 10px; }
+        #player-scores p { font-size: 16px; }
+        #num-ready { font-size: 14px; }
+      }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="sidebar">
+        <fieldset>
+          <legend>Control Panel</legend>
+          <label for="ready">
+            <input type="checkbox" id="ready"> Ready
+          </label>
+          <small id="num-ready"></small>
+        </fieldset>
+        <fieldset id="score-panel">
+          <legend>Player Scores</legend>
+          <div id="player-scores">
+
+          </div>
+        </fieldset>
+      </div>
+      <canvas id="canvas"></canvas>
+      <div class="sidebar">
+        <fieldset id="chat-container">
+          <legend>Chat</legend>
+          <div id="chat-log">
+          </div>
+          <div class="chat-input-container">
+            <span class="chat-prompt">user@game~></span>
+            <input type="text" id="chat-input" placeholder="type message...">
+          </div>
+        </fieldset>
+        
+      </div>
+    </div>
+  </body>
+  <script src="/static/game.js" defer></script>
+</html>

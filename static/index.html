@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Two Player Snake - Create a public or private lobby and play a two player version of the classic snake game">
+    <meta name="robots" content="index, nofollow">
+    <title>Two Player Snake</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            line-height: 1.6;
+            color: #00ff00;
+            background: #111;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        fieldset {
+            background: #111;
+            border: 1px solid #00ff00;
+            border-radius: 0;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #ffffff;
+            padding: 0 10px;
+            font-size: 1.2em;
+            font-family: 'Share Tech Mono', monospace;
+            background: #111;
+            border: 1px solid #00ff00;
+            padding: 5px 15px;
+        }
+
+        legend::before {
+            content: '[ ';
+            color: #00ff00;
+        }
+
+        legend::after {
+            content: ' ]';
+            color: #00ff00;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #00ff00;
+        }
+
+        label::before {
+            content: '> ';
+            color: #ffffff;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 0;
+            font-size: 16px;
+            margin-bottom: 15px;
+            background: #0a0a0a;
+            /* background: #111; */
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        input[type="text"]::placeholder {
+            color: #666;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #00ff00;
+        }
+        
+        /* Retro button effects */
+        input[type="checkbox"] {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid #00ff00;
+            /* background: #0a0a0a; */
+            background: #111;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        input[type="checkbox"]:checked {
+            background: #00ff00;
+        }
+        
+        input[type="checkbox"]:checked::after {
+            content: '#';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* color: #0a0a0a; */
+            color: #111;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+
+        button {
+            background: #111;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 15px 20px;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: normal;
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s;
+            width: 100%;
+            text-transform: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '[ ';
+            color: #ffffff;
+        }
+
+        button::after {
+            content: ' ]';
+            color: #ffffff;
+        }
+
+        button:hover:not(:disabled) {
+            background: #00ff00;
+            color: #111;
+        }
+
+        button:hover:not(:disabled)::before,
+        button:hover:not(:disabled)::after {
+            color: #111;
+        }
+
+        button:disabled {
+            background: #111;
+            color: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+
+        #public-rooms {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 0;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #111;
+        }
+
+        #public-rooms::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #public-rooms::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        #public-rooms::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 0;
+        }
+
+        #public-rooms li {
+            padding: 8px;
+            border-bottom: 1px solid #333;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        #public-rooms li:last-child {
+            border-bottom: none;
+        }
+
+        #public-rooms li::before {
+            content: '* ';
+            color: #ffffff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        #public-rooms a {
+            text-decoration: none;
+            display: block;
+            padding: 5px;
+            border-radius: 0;
+            transition: all 0.3s;
+        }
+
+        #public-rooms a:hover {
+            background: #333;
+            color: #ffffff;
+        }
+
+        .error-message {
+            animation: slideIn 0.3s ease-out;
+            color: #ff0000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        small {
+            color: #666;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        small::before {
+            content: '# ';
+            color: #00ff00;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+      
+        }
+
+        .ascii-art {
+            margin: 20px auto;
+
+            width: fit-content;
+            font-size: 14px;
+            line-height: 1.2;
+            white-space: pre;
+            overflow-x: auto;
+            background-color: #111;
+            padding: 20px;
+            color: #666;
+            /* border: 1px solid #333 */
+       } 
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        button:focus,
+        input:focus {
+            outline: 1px solid #ffffff;
+            outline-offset: 2px;
+        }
+
+        .container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="ascii-art">
+  ______               ____  __                      _____             __      
+ /_  __/      ______  / __ \/ /___ ___  _____  _____/ ___/____  ____ _/ /_____ 
+  / / | | /| / / __ \/ /_/ / / __ `/ / / / _ \/ ___/\__ \/ __ \/ __ `/ //_/ _ \
+ / /  | |/ |/ / /_/ / ____/ / /_/ / /_/ /  __/ /   ___/ / / / / /_/ / ,< /  __/
+/_/   |__/|__/\____/_/   /_/\__,_/\__, /\___/_/   /____/_/ /_/\__,_/_/|_|\___/ 
+                                 /____/                                       
+    </div>
+    <div class="container">
+        <fieldset>
+            <legend>Create a Room</legend>
+            <label for="room-name">Room Name *</label>
+            <input 
+                type="text" 
+                id="room-name" 
+                maxlength="50" 
+                placeholder="Enter room name" 
+                required 
+                autocomplete="off"
+                aria-describedby="room-name-help"
+            >
+            <small id="room-name-help">
+                Letters, numbers, spaces, hyphens, and underscores only
+            </small>
+            
+            <label for="borders">
+                <input type="checkbox" id="borders">
+                No Borders
+            </label>
+
+            <label for="public">
+                <input type="checkbox" id="public" >
+                Make room public
+            </label>
+            
+            <button id="create-room" type="button">Create Room</button>
+        </fieldset>
+
+        <fieldset>
+            <legend>Join a Room</legend>
+            <label for="room-id">Room ID *</label>
+            <input 
+                type="text" 
+                id="room-id" 
+                maxlength="100" 
+                placeholder="Enter room ID" 
+                required 
+                autocomplete="off"
+                aria-describedby="room-id-help"
+            >
+            <small id="room-id-help">
+                Letters, numbers, hyphens, and underscores only
+            </small>
+            
+            <button id="join-room" type="button">Join Room</button>
+        </fieldset>
+
+        <fieldset>
+            <legend>Public Rooms</legend>
+            <ul id="public-rooms" role="list" aria-label="List of public rooms">
+                <li style="color: #666; font-style: italic;">Loading rooms...</li>
+            </ul>
+            <button id="refresh-rooms" type="button">Refresh Rooms</button>
+        </fieldset>
+    </div>
+
+    <noscript>
+        <div style="background: #000; border: 1px solid #ff0000; color: #ff0000; padding: 15px; margin: 20px; border-radius: 0; text-align: center; font-family: 'Share Tech Mono', monospace;">
+            <strong>ERROR: JavaScript is required</strong><br>
+            Please enable JavaScript in your browser to use this game.
+        </div>
+    </noscript>
+
+    <script src="/static/main.js"></script>
+</body>
+</html>

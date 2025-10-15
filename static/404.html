@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>404 - Page Not Found</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Share Tech Mono', monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+        background: #111;
+        min-height: 100vh;
+        color: #00ff00;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      .terminal-container {
+        max-width: 800px;
+        width: 100%;
+        background: #0a0a0a;
+        border: 1px solid #00ff00;
+        padding: 30px;
+        position: relative;
+      }
+      
+      .terminal-header {
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: #666;
+        font-size: 14px;
+      }
+      
+      .terminal-header::before {
+        content: '● ● ● ';
+        color: #00ff00;
+        margin-right: 10px;
+      }
+      
+      .error-code {
+        font-size: 4em;
+        color: #ff4444;
+        text-align: center;
+        margin: 20px 0;
+        font-weight: bold;
+      }
+      
+      .error-message {
+        font-size: 1.2em;
+        color: #00ff00;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      
+      .command-output {
+        background: #111;
+        border: 1px solid #333;
+        padding: 20px;
+        margin: 20px 0;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      
+      .command-line {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+      }
+      
+      .prompt {
+        color: #00ff00;
+        margin-right: 10px;
+        user-select: none;
+      }
+      
+      .command {
+        color: #ffffff;
+      }
+      
+      .output {
+        color: #666;
+        margin-left: 20px;
+        font-style: italic;
+      }
+      
+      .error-output {
+        color: #ff4444;
+        margin-left: 20px;
+      }
+      
+      .navigation {
+        text-align: center;
+        margin-top: 30px;
+      }
+      
+      .nav-link {
+        color: #00ff00;
+        text-decoration: none;
+        border: 1px solid #00ff00;
+        padding: 10px 20px;
+        margin: 0 10px;
+        display: inline-block;
+        transition: all 0.3s;
+        background: #111;
+      }
+      
+      .nav-link:hover {
+        background: #00ff00;
+        color: #111;
+      }
+      
+      .nav-link::before {
+        content: '> ';
+      }
+      
+      .blinking-cursor {
+        animation: blink 1s infinite;
+        color: #00ff00;
+      }
+      
+      @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+      
+      @media (max-width: 768px) {
+        .terminal-container {
+          padding: 20px;
+        }
+        
+        .error-code {
+          font-size: 3em;
+        }
+        
+        .error-message {
+          font-size: 1em;
+        }
+        
+        .navigation {
+          margin-top: 20px;
+        }
+        
+        .nav-link {
+          display: block;
+          margin: 10px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="terminal-container">
+      <div class="terminal-header">
+        terminal@twoplayersnake: /var/www/html
+      </div>
+      
+      <div class="error-code">404</div>
+      <div class="error-message">ERROR: Page not found</div>
+      
+      <div class="command-output">
+        <div class="command-line">
+          <span class="prompt">user@twoplayersnaker:~$</span>
+          <span class="command">ls -la requested_page</span>
+        </div>
+        <div class="error-output">ls: cannot access 'requested_page': No such file or directory</div>
+        
+        <div class="command-line">
+          <span class="prompt">user@twoplayersnake:~$</span>
+          <span class="command">whoami</span>
+        </div>
+        <div class="output">lost_visitor</div>
+        
+        <div class="command-line">
+          <span class="prompt">user@twoplayersnake:~$</span>
+          <span class="blinking-cursor">_</span>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <a href="/" class="nav-link">go home</a>
+        <a href="/" class="nav-link">cd .. (go home)</a>
+      </div>
+    </div>
+  </body>
+</html>
